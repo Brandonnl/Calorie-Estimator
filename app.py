@@ -21,13 +21,17 @@ def upload_file ():
       return 'You didn\'t select a file goofy'
     
     if file:
-      filename = os.path.join (app.config ['UPLOAD_FOLDER'], file.filenames )
+      filename = os.path.join (app.config ['UPLOAD_FOLDER'], file.filename )
       file.save (filename)
 
       return 'Nice your file has been saved :)'
   
   return render_template ('upload.html')
-  
+    
+
+@app.route('/predict', methods=['POST'])
+def predict ():
+  return "Not implemented "
 
 
 if __name__ == '__main__':
