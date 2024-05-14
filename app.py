@@ -27,7 +27,7 @@ def upload_file ():
       return 'You didn\'t select a file goofy'
     
     if file:
-      filename = os.path.join (app.config ['UPLOAD_FOLDER'], file.filenames )
+      filename = os.path.join (app.config ['UPLOAD_FOLDER'], file.filename )
       file.save (filename)
 
       return 'Nice your file has been saved :)'
@@ -36,6 +36,10 @@ def upload_file ():
   
 df = pd.read_csv('data/food.csv')
 print(df.head())
+
+@app.route('/predict', methods=['POST'])
+def predict ():
+  return "Not implemented "
 
 if __name__ == '__main__':
   app.run (debug = True )
