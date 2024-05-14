@@ -2,6 +2,12 @@ from flask import Flask, request, render_template, jsonify
 
 import os 
 
+import matplotlib.pyplot as plt
+from PIL import Image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator  
+import numpy as np 
+import pandas as pd
+
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'uploads'
@@ -29,12 +35,13 @@ def upload_file ():
       return 'Nice your file has been saved :)'
   
   return render_template ('upload.html')
-    
+  
+df = pd.read_csv('data/food.csv')
+print(df.head())
 
 @app.route('/predict', methods=['POST'])
 def predict ():
   return "Not implemented "
-
 
 if __name__ == '__main__':
   app.run (debug = True )
