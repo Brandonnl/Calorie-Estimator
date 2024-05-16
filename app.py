@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, jsonify 
-
+from preprocess_image import prepare_image
 import os
 
 app = Flask(__name__)
@@ -25,14 +25,17 @@ def upload_file ():
     if file:
       filename = os.path.join (app.config ['UPLOAD_FOLDER'], file.filename )
       file.save (filename)
+      ingredients = predict_ingredients (filename)
 
-      return 'Nice your file has been saved :)'
+      return render_template('result.html', ingredients=ingredients)
   
   return render_template ('upload.html')
 
 @app.route('/predict', methods=['POST'])
-def predict ():
-  return "Not implemented "
+def predict_ingredients(img):
+  return "Hi"
+
+
 
 if __name__ == '__main__':
   app.run (debug = True )

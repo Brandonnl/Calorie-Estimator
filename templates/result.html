@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Ingredients Prediction Result</title>
+</head>
+
+<body>
+  <h1>Predicted Ingredients:</h1>
+  <ul>
+    {% for ingredient in ingredients %}
+    <li>{{ ingredient }}</li>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('upload_file') }}">Try another image</a>
+</body>
+
+</html>
