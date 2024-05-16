@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template, jsonify 
-from preprocess_image import prepare_image
 import os
 
 app = Flask(__name__)
