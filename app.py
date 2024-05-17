@@ -1,14 +1,17 @@
-from flask import Flask, request, render_template, jsonify 
+from flask import Flask, request, render_template, jsonify, send_from_directory
 import os
+# from food_recognition import predict_ingredients
+from prediction import predict_ingredients
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'uploads'
+IMAGE_FOLDER = 'data/images/images'
 
 if not os.path.exists (UPLOAD_FOLDER):
   os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -24,15 +27,20 @@ def upload_file ():
     if file:
       filename = os.path.join (app.config ['UPLOAD_FOLDER'], file.filename )
       file.save (filename)
-      ingredients = predict_ingredients (filename)
+      result = predict_ingredients (filename)
 
-      return render_template('result.html', ingredients=ingredients)
+      return render_template('result.html', predictions=result)
+    
   
   return render_template ('upload.html')
 
-@app.route('/predict', methods=['POST'])
-def predict_ingredients(img):
-  return "Hi"
+@app.route('/images/<filename>')
+def display_image(filename):
+    return send_from_directory(app.config['IMAGE_FOLDER'], filename)
+
+# @app.route('/predict', methods=['POST'])
+# def predict_ingredients(img):
+#   return "Hi"
 
 
 

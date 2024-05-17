@@ -20,3 +20,5 @@ def parse_ingredients(row):
 df['parsed_ingredients'] = df.apply(parse_ingredients, axis=1)
 print(df.at[0, 'parsed_ingredients'])
 print(df.head())
+
+
