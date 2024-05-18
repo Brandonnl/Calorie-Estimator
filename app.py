@@ -18,19 +18,21 @@ if not os.path.exists (UPLOAD_FOLDER):
   os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-model = (torch.load('data/model.pth'))
-model.eval()
+model = CLIPToPCA(512, 900, 706)
+model.load_state_dict (torch.load('data/model3.pth'))
 
 def predict_ingredients (img):
   
     new_image_encodings = process_single_image(img).unsqueeze(0)
+    model.eval()
     with torch.no_grad():
         outputs = model(new_image_encodings)
         predicted_encodings = outputs.numpy()
 
-    encodings_list = predicted_encodings.tolist()
+    encodings_list = predicted_encodings.flatten().tolist()
     encodings_sorted = sorted(range(len(encodings_list)), key=lambda k: encodings_list[k], reverse=True)
-    top_n = min(20, len(encodings_sorted))  
+    top_n = min(20, len(encodings_sorted))
+    print (encodings_sorted)
     top_ingredients = [(pca_ingredients[encodings_sorted[i]]) for i in range(top_n)]
     
     return top_ingredients
