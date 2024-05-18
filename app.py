@@ -1,17 +1,39 @@
 from flask import Flask, request, render_template, jsonify, send_from_directory
 import os
-# from food_recognition import predict_ingredients
-from prediction import predict_ingredients
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, Dataset, random_split
+from PIL import Image 
+from transformers import CLIPProcessor, CLIPModel
+import torch
+from image import process_single_image
+from pca import pca_ingredients, CLIPToPCA
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'uploads'
-IMAGE_FOLDER = 'data/images/images'
+IMAGE_FOLDER = 'data/images/images/'
 
 if not os.path.exists (UPLOAD_FOLDER):
   os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
+
+model = (torch.load('data/model.pth'))
+model.eval()
+
+def predict_ingredients (img):
+  
+    new_image_encodings = process_single_image(img).unsqueeze(0)
+    with torch.no_grad():
+        outputs = model(new_image_encodings)
+        predicted_encodings = outputs.numpy()
+
+    encodings_list = predicted_encodings.tolist()
+    encodings_sorted = sorted(range(len(encodings_list)), key=lambda k: encodings_list[k], reverse=True)
+    top_n = min(20, len(encodings_sorted))  
+    top_ingredients = [(pca_ingredients[encodings_sorted[i]]) for i in range(top_n)]
+    
+    return top_ingredients
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -27,9 +49,8 @@ def upload_file ():
     if file:
       filename = os.path.join (app.config ['UPLOAD_FOLDER'], file.filename )
       file.save (filename)
-      result = predict_ingredients (filename)
-
-      return render_template('result.html', predictions=result)
+      ingredients = predict_ingredients (filename)
+      return render_template('result.html', ingredients=ingredients)
     
   
   return render_template ('upload.html')
